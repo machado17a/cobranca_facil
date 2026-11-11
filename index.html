@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CobrançaFácil — Lembretes de Cobrança para iPhone</title>
+<meta name="description" content="Controle de mensalidades de hospedagem de animais e despesas do Haras e da Casa.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cobrança iOS">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<style>
+:root{
+  --bg:#f2f2f7; --card:#ffffff; --card2:#f7f7fa; --text:#1c1c1e; --muted:#6e6e73; --line:#e3e3e8;
+  --accent:#0a7d4f; --accent-soft:#e3f4ec; --blue:#007aff; --red:#d70015; --red-soft:#fde8ea;
+  --orange:#c25e00; --orange-soft:#fff1e0; --yellow-soft:#fff8d6; --yellow:#8a6d00;
+  --green:#1e8e3e; --green-soft:#e6f4ea; --shadow:0 1px 2px rgba(0,0,0,.06),0 1px 8px rgba(0,0,0,.04);
+  --radius:14px; --tab-h:58px;
+  --safe-b:env(safe-area-inset-bottom,0px); --safe-t:env(safe-area-inset-top,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#000000; --card:#1c1c1e; --card2:#2c2c2e; --text:#f5f5f7; --muted:#98989d; --line:#38383a;
+    --accent:#30d158; --accent-soft:#0f2e1a; --blue:#0a84ff; --red:#ff453a; --red-soft:#3a1412;
+    --orange:#ff9f0a; --orange-soft:#3a2706; --yellow-soft:#332b00; --yellow:#ffd60a;
+    --green:#30d158; --green-soft:#0f2e1a; --shadow:none;
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text)}
+body{font:16px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;padding-bottom:calc(var(--tab-h) + var(--safe-b) + 16px);overscroll-behavior-y:none}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+.hidden{display:none!important}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+
+/* Header */
+header.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);
+  -webkit-backdrop-filter:saturate(180%) blur(18px);backdrop-filter:saturate(180%) blur(18px);
+  padding-top:var(--safe-t);border-bottom:.5px solid var(--line)}
+.top-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0 8px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand-ico{width:36px;height:36px;border-radius:9px;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:20px;flex:none}
+.brand h1{font-size:18px;margin:0;line-height:1.1;letter-spacing:-.2px}
+.brand p{margin:0;font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill-btn{background:var(--accent);color:#fff;border-radius:999px;padding:8px 14px;font-weight:600;font-size:14.5px;display:inline-flex;align-items:center;gap:6px;flex:none}
+.pill-btn.ghost{background:var(--card);color:var(--accent);box-shadow:var(--shadow)}
+
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0 4px}
+.kpi{background:var(--card);border-radius:12px;padding:9px 10px;box-shadow:var(--shadow);min-width:0}
+.kpi span{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi b{display:block;font-size:14.5px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.kpi.pos b{color:var(--green)} .kpi.neg b{color:var(--red)}
+@media (max-width:420px){.kpis{grid-template-columns:repeat(2,1fr)}}
+
+h2.section{font-size:22px;margin:18px 0 8px;letter-spacing:-.3px}
+.sub{color:var(--muted);font-size:13.5px;margin:-4px 0 12px}
+
+/* Chips & filters */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 10px}
+.chip{font-size:12.5px;font-weight:600;border-radius:999px;padding:4px 10px;background:var(--card2);color:var(--muted)}
+.chip.red{background:var(--red-soft);color:var(--red)} .chip.orange{background:var(--orange-soft);color:var(--orange)}
+.chip.yellow{background:var(--yellow-soft);color:var(--yellow)} .chip.green{background:var(--green-soft);color:var(--green)}
+.chip.blue{background:color-mix(in srgb,var(--blue) 14%,transparent);color:var(--blue)}
+.seg{display:flex;background:var(--card2);border-radius:10px;padding:2px;margin:8px 0 12px}
+.seg button{flex:1;padding:7px 4px;border-radius:8px;font-size:13.5px;font-weight:500;color:var(--muted)}
+.seg button.on{background:var(--card);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.search{width:100%;border:0;border-radius:10px;background:var(--card2);padding:9px 12px;font-size:16px;outline:none}
+
+/* Cards */
+.list{display:flex;flex-direction:column;gap:10px}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px 14px}
+.charge{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:start}
+.charge.overdue{box-shadow:inset 3px 0 0 var(--red),var(--shadow)}
+.charge.today{box-shadow:inset 3px 0 0 var(--orange),var(--shadow)}
+.charge.soon{box-shadow:inset 3px 0 0 var(--yellow),var(--shadow)}
+.charge.paid{box-shadow:inset 3px 0 0 var(--green),var(--shadow)}
+.num{grid-row:span 3;width:44px;height:44px;border-radius:11px;background:var(--accent-soft);color:var(--accent);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;line-height:1}
+.num small{font-size:9px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;opacity:.8}
+.num b{font-size:17px;margin-top:2px}
+.c-name{font-weight:650;font-size:16.5px;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.c-amount{font-weight:650;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.c-line{grid-column:2 / 4;color:var(--muted);font-size:13.5px}
+.c-line .animal{color:var(--text);font-weight:550}
+.c-meta{grid-column:2 / 4;display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--muted)}
+.c-actions{grid-column:1 / 4;display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.act{flex:1 1 auto;min-width:68px;display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:8px 10px;border-radius:10px;
+  background:var(--card2);font-size:13.5px;font-weight:600;color:var(--text)}
+.act.wa{color:#fff;background:#25a244}
+.act.pay{color:#fff;background:var(--accent)}
+.act.undo{color:var(--orange);background:var(--orange-soft)}
+.act.danger{color:var(--red);background:var(--red-soft)}
+.act svg{width:16px;height:16px;flex:none}
+.empty{text-align:center;color:var(--muted);padding:28px 10px}
+
+/* Expense rows */
+.exp{display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center}
+.exp.paid{box-shadow:inset 3px 0 0 var(--green),var(--shadow)}
+.exp-title{font-weight:620;font-size:15.5px}
+.exp-cat{color:var(--muted);font-size:12.5px}
+.exp-inline{grid-column:1 / 3;display:grid;grid-template-columns:1.4fr .8fr auto;gap:6px;align-items:end}
+.exp-inline label{font-size:11px;color:var(--muted);display:block;margin:0 0 2px 2px}
+.field-in{width:100%;border:1px solid var(--line);background:var(--card2);border-radius:9px;padding:8px 9px;font-size:16px;outline:none;font-variant-numeric:tabular-nums}
+.field-in:focus{border-color:var(--accent)}
+.exp-actions{grid-column:1 / 3;display:flex;gap:6px}
+.exp-actions .act{min-width:0}
+.tot{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--muted);padding:2px 4px 0}
+.tot b{color:var(--text);font-variant-numeric:tabular-nums}
+
+/* Forms */
+.group{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:14px}
+.row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:.5px solid var(--line);min-height:46px}
+.row:last-child{border-bottom:0}
+.row > label{flex:0 0 38%;font-size:15px}
+.row input,.row select,.row textarea{flex:1;min-width:0;border:0;background:transparent;font-size:16px;outline:none;text-align:right}
+.row textarea{text-align:left;resize:vertical;min-height:70px}
+.row.col{flex-direction:column;align-items:stretch}
+.row.col > label{flex:none;font-size:13px;color:var(--muted)}
+.row.col textarea{min-height:96px;background:var(--card2);border-radius:8px;padding:8px}
+.group-title{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin:16px 4px 6px}
+.hint{font-size:12.5px;color:var(--muted);margin:-8px 4px 14px}
+.btn{display:flex;width:100%;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:12px;font-weight:600;font-size:15.5px;background:var(--card);color:var(--blue);box-shadow:var(--shadow);margin-bottom:8px}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.danger{color:var(--red)}
+.btn svg{width:18px;height:18px}
+
+/* Sheet / modal */
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:50;display:flex;align-items:flex-end;justify-content:center;animation:fade .15s ease}
+.sheet{background:var(--bg);width:100%;max-width:720px;max-height:calc(100% - var(--safe-t) - 18px);border-radius:16px 16px 0 0;display:flex;flex-direction:column;animation:up .22s ease}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:.5px solid var(--line);position:sticky;top:0;background:var(--bg);border-radius:16px 16px 0 0}
+.sheet-head h3{margin:0;font-size:16.5px}
+.sheet-head button{color:var(--blue);font-size:16px;padding:4px 6px}
+.sheet-head .save{font-weight:700;color:#fff;background:var(--accent);border-radius:999px;padding:6px 14px}
+.sheet-body{overflow:auto;-webkit-overflow-scrolling:touch;padding:14px 16px calc(24px + var(--safe-b))}
+@keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.tone{display:flex;gap:6px;margin-bottom:10px}
+.tone button{flex:1;padding:8px 6px;border-radius:10px;background:var(--card);box-shadow:var(--shadow);font-size:13.5px;font-weight:600;color:var(--muted)}
+.tone button.on{background:var(--accent);color:#fff}
+.msg{width:100%;min-height:200px;border:0;border-radius:12px;background:var(--card);padding:12px;font-size:15.5px;line-height:1.45;box-shadow:var(--shadow);outline:none;resize:vertical}
+
+/* Toast */
+.toast{position:fixed;left:50%;bottom:calc(var(--tab-h) + var(--safe-b) + 14px);transform:translateX(-50%);background:rgba(28,28,30,.94);color:#fff;
+  padding:10px 16px;border-radius:12px;font-size:14.5px;z-index:80;max-width:calc(100% - 32px);text-align:center;animation:fade .15s ease}
+
+/* Tab bar */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:color-mix(in srgb,var(--card) 92%,transparent);
+  -webkit-backdrop-filter:saturate(180%) blur(18px);backdrop-filter:saturate(180%) blur(18px);border-top:.5px solid var(--line);padding-bottom:var(--safe-b)}
+nav.tabs .in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);height:var(--tab-h)}
+nav.tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10.5px;font-weight:550;color:var(--muted);position:relative}
+nav.tabs button svg{width:24px;height:24px}
+nav.tabs button.on{color:var(--accent)}
+.badge{position:absolute;top:5px;left:calc(50% + 6px);min-width:17px;height:17px;border-radius:9px;background:var(--red);color:#fff;font-size:10.5px;font-weight:700;display:grid;place-items:center;padding:0 4px}
+.banner{border-radius:12px;padding:10px 12px;font-size:14px;margin:10px 0;display:flex;gap:10px;align-items:flex-start}
+.banner.red{background:var(--red-soft);color:var(--red)}
+.banner.warn{background:var(--yellow-soft);color:var(--text);align-items:center}
+.banner.info{background:color-mix(in srgb,var(--blue) 12%,transparent);color:var(--blue)}
+.banner b{font-weight:700}
+.steps{margin:0;padding-left:20px;font-size:14.5px}
+.steps li{margin:4px 0}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="top-inner">
+      <div class="brand">
+        <div class="brand-ico" aria-hidden="true">🐎</div>
+        <div style="min-width:0">
+          <h1>CobrançaFácil</h1>
+          <p id="hdrSub">Haras</p>
+        </div>
+      </div>
+      <button class="pill-btn" id="hdrAdd" data-action="new-charge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        <span id="hdrAddLabel">Animal</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="kpis" id="kpis" aria-label="Balanço mensal consolidado"></section>
+
+  <!-- COBRANÇAS -->
+  <section id="tab-charges" data-tab>
+    <h2 class="section">🐎 Hospedagem</h2>
+    <p class="sub" id="chargesSub"></p>
+    <div id="chargesAlert"></div>
+    <div class="chips" id="chargeChips"></div>
+    <input class="search" id="search" type="search" placeholder="Buscar cliente ou animal" autocomplete="off">
+    <div class="seg" id="chargeFilter">
+      <button data-filter="all" class="on">Todos</button>
+      <button data-filter="open">Em aberto</button>
+      <button data-filter="late">Atrasados</button>
+      <button data-filter="paid">Pagos</button>
+    </div>
+    <div class="list" id="chargeList"></div>
+  </section>
+
+  <!-- DESPESAS HARAS -->
+  <section id="tab-haras" data-tab class="hidden">
+    <h2 class="section">🌾 Despesas do Haras</h2>
+    <p class="sub">Digite o valor e o dia de vencimento e toque em <b>Salvar</b>. O status "Pago" volta para "Em aberto" automaticamente no mês seguinte.</p>
+    <div class="chips" id="harasChips"></div>
+    <div class="list" id="harasList"></div>
+  </section>
+
+  <!-- DESPESAS CASA -->
+  <section id="tab-casa" data-tab class="hidden">
+    <h2 class="section">🏠 Despesas da Casa</h2>
+    <p class="sub">Inclui os três veículos separados (Carro 1, 2 e 3 — renomeie em Editar).</p>
+    <div class="chips" id="casaChips"></div>
+    <div class="list" id="casaList"></div>
+  </section>
+
+  <!-- AVISOS -->
+  <section id="tab-alerts" data-tab class="hidden">
+    <h2 class="section">🔔 Avisos</h2>
+    <p class="sub">Cobranças atrasadas, de hoje e dentro do prazo de antecedência configurado em cada animal.</p>
+    <div class="list" id="alertList"></div>
+
+    <div class="group-title">Alarme no iPhone (recomendado)</div>
+    <div class="banner info"><div>O jeito mais confiável de o iPhone <b>tocar o alarme mesmo com o app fechado</b> é adicionar os vencimentos ao app <b>Calendário</b>. Cada evento se repete todo mês e tem alerta no horário e nos dias de antecedência escolhidos.</div></div>
+    <button class="btn primary" data-action="ics-all">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      Adicionar todos ao Calendário (.ics)
+    </button>
+    <p class="hint">Se o app foi aberto pela Tela de Início e o arquivo não abrir, use o mesmo endereço no Safari.</p>
+
+    <div class="group-title">Avisos dentro do app</div>
+    <button class="btn" data-action="enable-notif">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+      <span id="notifLabel">Ativar notificações</span>
+    </button>
+    <button class="btn" data-action="test-sound">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>
+      Testar som de lembrete
+    </button>
+    <p class="hint">Ao abrir o app, ele toca o som e mostra o aviso (uma vez por dia por cobrança). No iPhone, notificações só funcionam com o app instalado na Tela de Início (iOS 16.4 ou mais recente).</p>
+  </section>
+
+  <!-- AJUSTES -->
+  <section id="tab-settings" data-tab class="hidden">
+    <h2 class="section">⚙️ Ajustes</h2>
+
+    <div class="group-title">Mensagens e PIX</div>
+    <div class="group">
+      <div class="row"><label for="setBusiness">Nome do negócio</label><input id="setBusiness" type="text" autocomplete="organization"></div>
+      <div class="row"><label for="setPix">Chave PIX</label><input id="setPix" type="text" placeholder="CPF, e-mail, telefone…" autocapitalize="off"></div>
+    </div>
+    <div class="group">
+      <div class="row col"><label for="tplPreventive">Mensagem preventiva (antes do vencimento)</label><textarea id="tplPreventive"></textarea></div>
+      <div class="row col"><label for="tplDueToday">Mensagem "vence hoje"</label><textarea id="tplDueToday"></textarea></div>
+      <div class="row col"><label for="tplOverdue">Mensagem "em atraso"</label><textarea id="tplOverdue"></textarea></div>
+    </div>
+    <p class="hint">Campos disponíveis: {cliente} {animal} {valor} {vencimento} {dias} {pix} {empresa}</p>
+    <button class="btn primary" data-action="save-settings">Salvar ajustes</button>
+    <button class="btn" data-action="reset-templates">Restaurar mensagens padrão</button>
+
+    <div class="group-title">No iPhone — instalar na Tela de Início</div>
+    <div class="card">
+      <ol class="steps">
+        <li>Abra este endereço no <b>Safari</b>.</li>
+        <li>Toque em <b>Compartilhar</b> (quadrado com seta para cima).</li>
+        <li>Escolha <b>Adicionar à Tela de Início</b> e confirme.</li>
+        <li>Abra sempre pelo ícone <b>Cobrança iOS</b> — os dados ficam salvos no próprio iPhone.</li>
+      </ol>
+    </div>
+
+    <div class="group-title">Backup e arquivos</div>
+    <div class="card" style="margin-bottom:10px;font-size:14.5px"><b id="backupStatus"></b>
+      <div style="color:var(--muted);font-size:13px;margin-top:4px">Os botões abaixo abrem o menu <b>Compartilhar</b> do iPhone: escolha <b>Salvar em Arquivos</b> (e a pasta, ex.: iCloud Drive), ou envie para você mesmo no WhatsApp/e-mail.</div></div>
+    <button class="btn primary" data-action="export-json">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+      Backup / cadastro completo (.json)
+    </button>
+    <button class="btn" data-action="export-csv">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+      Planilha (.csv)
+    </button>
+    <button class="btn" data-action="import-json">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Restaurar / importar (.json)
+    </button>
+    <input type="file" id="importFile" class="hidden">
+    <p class="hint">O arquivo .json guarda tudo (animais, proprietários, despesas e ajustes) e serve para levar os dados para outro aparelho. Ao importar, substitui os dados atuais. Os dados ficam só neste aparelho — apagar os dados do Safari apaga o histórico.</p>
+    <button class="btn danger" data-action="reset-all">Apagar todos os dados</button>
+    <p class="hint" id="aboutLine" style="text-align:center;margin-top:14px"></p>
+  </section>
+</main>
+
+<nav class="tabs" aria-label="Navegação">
+  <div class="in">
+    <button data-tab-btn="charges" class="on">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg>
+      Cobranças<span class="badge hidden" id="badgeCharges"></span>
+    </button>
+    <button data-tab-btn="haras">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22 16 8M3.5 12.5 5 11l1.5 1.5a3.5 3.5 0 0 1 0 5L5 19l-1.5-1.5a3.5 3.5 0 0 1 0-5zM7.5 8.5 9 7l1.5 1.5a3.5 3.5 0 0 1 0 5L9 15l-1.5-1.5a3.5 3.5 0 0 1 0-5zM11.5 4.5 13 3l1.5 1.5a3.5 3.5 0 0 1 0 5L13 11l-1.5-1.5a3.5 3.5 0 0 1 0-5zM20 2h2v2a4 4 0 0 1-4 4h-2V6a4 4 0 0 1 4-4z"/></svg>
+      Desp. Haras
+    </button>
+    <button data-tab-btn="casa">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+      Desp. Casa
+    </button>
+    <button data-tab-btn="alerts">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+      Avisos<span class="badge hidden" id="badgeAlerts"></span>
+    </button>
+    <button data-tab-btn="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Ajustes
+    </button>
+  </div>
+</nav>
+
+<div id="modalRoot"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var APP_VERSION = '5.2.0';
+  var BACKUP_REMIND_DAYS = 7;
+  var STORE_KEY = 'cf_haras_state_v5';
+  var WINDOW_NAME_KEY = 'cf_ios_v5:';
+
+  /* ------------------------------------------------------------------ *
+   * Datas (sempre em horário local, formato ISO YYYY-MM-DD)
+   * ------------------------------------------------------------------ */
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function iso(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function parseISO(s) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s || ''));
+    if (!m) return null;
+    return new Date(+m[1], +m[2] - 1, +m[3]);
+  }
+  function today() { var d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+  function ym(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1); }
+  function daysInMonth(y, m0) { return new Date(y, m0 + 1, 0).getDate(); }
+  function addDays(d, n) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
+  function diffDays(a, b) { return Math.round((b - a) / 86400000); } // b - a
+  function lastBusinessDay(y, m0) {
+    var d = new Date(y, m0 + 1, 0);
+    while (d.getDay() === 0 || d.getDay() === 6) d.setDate(d.getDate() - 1);
+    return d;
+  }
+  function dueInMonth(c, y, m0) {
+    // normaliza mês fora do intervalo (ex.: m0 = 12)
+    var base = new Date(y, m0, 1); y = base.getFullYear(); m0 = base.getMonth();
+    if (c.lastBusinessDay) return lastBusinessDay(y, m0);
+    return new Date(y, m0, Math.min(c.paymentDay || 1, daysInMonth(y, m0)));
+  }
+  function nextDueDate(c) {
+    var d = parseISO(c.dueDate) || today();
+    if (c.recurrence === 'weekly') return addDays(d, 7);
+    if (c.recurrence === 'biweekly') return addDays(d, 14);
+    if (c.recurrence === 'monthly') return dueInMonth(c, d.getFullYear(), d.getMonth() + 1);
+    return null;
+  }
+  // Data a partir da qual o próximo ciclo de um animal já "pago" volta a ficar em aberto.
+  function cycleOpenDate(c) {
+    var due = parseISO(c.dueDate); if (!due) return today();
+    var adv = addDays(due, -(+c.advanceDays || 0));
+    if (c.recurrence === 'monthly') {
+      var first = new Date(due.getFullYear(), due.getMonth(), 1);
+      return adv < first ? adv : first;
+    }
+    return adv;
+  }
+  var MESES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  function fmtDate(s) { var d = parseISO(s); return d ? pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear() : '—'; }
+  function fmtDateShort(s) { var d = parseISO(s); return d ? pad(d.getDate()) + '/' + pad(d.getMonth() + 1) : '—'; }
+
+  /* ------------------------------------------------------------------ *
+   * Dinheiro / texto
+   * ------------------------------------------------------------------ */
+  var BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+  function money(n) { return BRL.format(+n || 0); }
+  function moneyInput(n) { n = +n || 0; return n ? n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''; }
+  // Aceita "1.400,00", "1400,50", "1.400", "1400", "1400.50", "R$ 1.400"
+  function parseMoneyBR(v) {
+    if (typeof v === 'number') return isFinite(v) ? Math.round(v * 100) / 100 : 0;
+    var s = String(v || '').replace(/[^\d,.\-]/g, '');
+    if (!s) return 0;
+    if (s.indexOf(',') >= 0) {
+      s = s.replace(/\./g, '').replace(',', '.');
+    } else {
+      var parts = s.split('.');
+      if (parts.length > 2 || (parts.length === 2 && parts[1].length === 3)) s = parts.join('');
+    }
+    var n = parseFloat(s);
+    return isFinite(n) ? Math.round(n * 100) / 100 : 0;
+  }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function digits(s) { return String(s || '').replace(/\D/g, ''); }
+  function maskPhone(v) {
+    var d = digits(v).slice(0, 11);
+    if (d.length <= 2) return d.length ? '(' + d : '';
+    if (d.length <= 6) return '(' + d.slice(0, 2) + ') ' + d.slice(2);
+    if (d.length <= 10) return '(' + d.slice(0, 2) + ') ' + d.slice(2, 6) + '-' + d.slice(6);
+    return '(' + d.slice(0, 2) + ') ' + d.slice(2, 7) + '-' + d.slice(7);
+  }
+  function clampDay(n) { n = parseInt(n, 10); return isFinite(n) ? Math.max(1, Math.min(31, n)) : 1; }
+  function uid(p) { return p + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function norm(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+
+  /* ------------------------------------------------------------------ *
+   * Dados iniciais
+   * O cadastro real (animais, proprietários, valores) NÃO fica no código:
+   * ele é importado pelo usuário a partir de um arquivo .json privado
+   * (Ajustes › Restaurar / importar). Assim o repositório pode ser público.
+   * ------------------------------------------------------------------ */
+  function initialCharges() { return []; }
+  function exp(id, title, category, dueDay) {
+    return { id: id, title: title, category: category, amount: 0, dueDay: dueDay || 10, status: 'pending', paidMonth: null };
+  }
+  function initialHaras() {
+    return [
+      exp('haras-1', 'Ração Peletizada', 'Alimentação Animal • Haras'),
+      exp('haras-2', 'Ração Farelada', 'Alimentação Animal • Haras'),
+      exp('haras-3', 'Farelo de Trigo', 'Alimentação Animal • Haras'),
+      exp('haras-4', 'Combustível (Trator / Operação do Haras)', 'Operação • Haras'),
+      exp('haras-5', 'Óleo 2T (Roçadeiras e Máquinas)', 'Operação • Haras'),
+      exp('haras-6', 'Medicamentos Veterinários', 'Saúde Animal • Haras'),
+      exp('haras-7', 'Casqueamento e Ferrageamento', 'Saúde Animal • Haras'),
+      exp('haras-8', 'Funcionários (Folha e Manutenção — 3 Funcionários)', 'Pessoal • Haras', 5)
+    ];
+  }
+  function initialCasa() {
+    return [
+      exp('casa-1', 'Luz (Energia Elétrica)', 'Contas • Casa'),
+      exp('casa-2', 'Condomínio', 'Contas • Casa'),
+      exp('casa-3', 'IPTU', 'Impostos • Casa'),
+      exp('casa-4', 'Mercado', 'Alimentação • Casa'),
+      exp('casa-5', 'Curso', 'Educação • Casa'),
+      exp('casa-6', 'Carro 1', 'Veículos • Casa'),
+      exp('casa-7', 'Carro 2', 'Veículos • Casa'),
+      exp('casa-8', 'Carro 3', 'Veículos • Casa')
+    ];
+  }
+  var DEFAULT_TEMPLATES = {
+    tplPreventive: 'Olá, {cliente}! Tudo bem? 🐎\n\nPassando para lembrar que a mensalidade de hospedagem do(a) {animal}, no valor de {valor}, vence em {vencimento}.\n\nChave PIX: {pix}\n\nObrigado!\n{empresa}',
+    tplDueToday: 'Olá, {cliente}! Tudo bem? 🐎\n\nHoje ({vencimento}) vence a mensalidade de hospedagem do(a) {animal}, no valor de {valor}.\n\nChave PIX: {pix}\n\nQualquer dúvida, estou à disposição.\n{empresa}',
+    tplOverdue: 'Olá, {cliente}! Tudo bem?\n\nConsta em aberto a mensalidade de hospedagem do(a) {animal}, no valor de {valor}, com vencimento em {vencimento} ({dias} dias de atraso).\n\nChave PIX: {pix}\n\nSe já realizou o pagamento, por favor desconsidere e me envie o comprovante. Obrigado!\n{empresa}'
+  };
+  function defaultSettings() {
+    return { businessName: 'Meu Haras', pixKey: '',
+      tplPreventive: DEFAULT_TEMPLATES.tplPreventive, tplDueToday: DEFAULT_TEMPLATES.tplDueToday, tplOverdue: DEFAULT_TEMPLATES.tplOverdue };
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Normalização (aceita dados antigos / backups do protótipo anterior)
+   * ------------------------------------------------------------------ */
+  function normCharge(c) {
+    c = c || {};
+    var day = clampDay(c.paymentDay || (parseISO(c.dueDate) || today()).getDate());
+    var animal = String(c.animalName || '').trim();
+    var due = parseISO(c.dueDate) ? c.dueDate : iso(dueInMonth({ paymentDay: day, lastBusinessDay: !!c.lastBusinessDay }, today().getFullYear(), today().getMonth()));
+    return {
+      id: String(c.id || uid('chg')),
+      clientName: String(c.clientName || '').trim() || 'Cliente',
+      clientPhone: String(c.clientPhone || ''),
+      animalName: animal,
+      paymentDay: day,
+      paymentDayLabel: String(c.paymentDayLabel || ('Todo dia ' + pad(day))),
+      lastBusinessDay: !!c.lastBusinessDay || /último dia útil/i.test(String(c.paymentDayLabel || '')),
+      service: String(c.service || (animal ? 'Animal: ' + animal + ' (Hospedagem)' : 'Hospedagem')),
+      amount: parseMoneyBR(c.amount),
+      dueDate: due,
+      reminderTime: /^\d{2}:\d{2}$/.test(c.reminderTime) ? c.reminderTime : '09:00',
+      advanceDays: [0, 1, 2, 3, 5].indexOf(+c.advanceDays) >= 0 ? +c.advanceDays : 2,
+      recurrence: ['once', 'monthly', 'biweekly', 'weekly'].indexOf(c.recurrence) >= 0 ? c.recurrence : 'monthly',
+      notes: String(c.notes || ''),
+      status: c.status === 'paid' ? 'paid' : 'pending',
+      payments: Array.isArray(c.payments) ? c.payments.filter(function (p) { return p && p.ref; }) : [],
+      lastNotifiedDate: c.lastNotifiedDate || null,
+      isDemo: !!c.isDemo
+    };
+  }
+  function normExpense(e, prefix) {
+    e = e || {};
+    return {
+      id: String(e.id || uid(prefix)),
+      title: String(e.title || '').trim() || 'Despesa',
+      category: String(e.category || ''),
+      amount: parseMoneyBR(e.amount),
+      dueDay: clampDay(e.dueDay || 10),
+      status: e.status === 'paid' ? 'paid' : 'pending',
+      paidMonth: e.paidMonth || (e.status === 'paid' ? ym(today()) : null)
+    };
+  }
+  function normSettings(s) {
+    var d = defaultSettings(); s = s || {};
+    for (var k in d) if (typeof s[k] === 'string') d[k] = s[k];
+    return d;
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Persistência: localStorage → fallback window.name
+   * ------------------------------------------------------------------ */
+  var state = null;
+  var storageOK = true;
+
+  function readStore() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) { storageOK = false; }
+    try {
+      if (window.name && window.name.indexOf(WINDOW_NAME_KEY) === 0) return JSON.parse(window.name.slice(WINDOW_NAME_KEY.length));
+    } catch (e) {}
+    return null;
+  }
+  function saveState() {
+    var payload = JSON.stringify({ version: 5, charges: state.charges, harasExpenses: state.harasExpenses, casaExpenses: state.casaExpenses, settings: state.settings, meta: state.meta });
+    try { localStorage.setItem(STORE_KEY, payload); storageOK = true; }
+    catch (e) { storageOK = false; try { window.name = WINDOW_NAME_KEY + payload; } catch (e2) {} }
+  }
+  function buildState(raw) {
+    raw = raw || {};
+    return {
+      charges: Array.isArray(raw.charges) ? raw.charges.map(normCharge) : initialCharges().map(normCharge),
+      harasExpenses: Array.isArray(raw.harasExpenses) ? raw.harasExpenses.map(function (e) { return normExpense(e, 'haras'); }) : initialHaras(),
+      casaExpenses: Array.isArray(raw.casaExpenses) ? raw.casaExpenses.map(function (e) { return normExpense(e, 'casa'); }) : initialCasa(),
+      settings: normSettings(raw.settings),
+      meta: { lastBackupAt: (raw.meta && raw.meta.lastBackupAt) || null }
+    };
+  }
+  // Vira o mês: pago → em aberto quando chega o próximo ciclo.
+  function rollover() {
+    var t = today(), curYM = ym(t), changed = false;
+    state.charges.forEach(function (c) {
+      if (c.status === 'paid' && c.recurrence !== 'once' && t >= cycleOpenDate(c)) { c.status = 'pending'; changed = true; }
+    });
+    [state.harasExpenses, state.casaExpenses].forEach(function (list) {
+      list.forEach(function (e) {
+        if (e.status === 'paid' && e.paidMonth !== curYM) { e.status = 'pending'; e.paidMonth = null; changed = true; }
+      });
+    });
+    return changed;
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Regras de cobrança
+   * ------------------------------------------------------------------ */
+  function chargeInfo(c) {
+    var t = today(), due = parseISO(c.dueDate) || t, d = diffDays(t, due);
+    if (c.status === 'paid') return { key: 'paid', label: 'Pago', chip: 'green', days: d,
+      detail: c.recurrence === 'once' ? 'Quitado' : 'Próximo vencimento ' + fmtDateShort(c.dueDate) };
+    if (d < 0) return { key: 'overdue', label: 'Atrasado ' + (-d) + (d === -1 ? ' dia' : ' dias'), chip: 'red', days: d };
+    if (d === 0) return { key: 'today', label: 'Vence hoje', chip: 'orange', days: d };
+    if (d <= (+c.advanceDays || 0)) return { key: 'soon', label: d === 1 ? 'Vence amanhã' : 'Vence em ' + d + ' dias', chip: 'yellow', days: d };
+    return { key: 'pending', label: 'Em aberto', chip: '', days: d };
+  }
+  function sortedCharges() {
+    var list = state.charges.slice().sort(function (a, b) {
+      return (a.paymentDay - b.paymentDay) ||
+        norm(a.clientName).localeCompare(norm(b.clientName)) ||
+        norm(a.animalName).localeCompare(norm(b.animalName));
+    });
+    var byClient = {};
+    list.forEach(function (c) { var k = norm(c.clientName); (byClient[k] = byClient[k] || []).push(c); });
+    list.forEach(function (c, i) {
+      var group = byClient[norm(c.clientName)];
+      c._globalIndex = i + 1;
+      c._clientAnimalIndex = group.indexOf(c) + 1;
+      c._clientAnimalTotal = group.length;
+    });
+    return list;
+  }
+  function monthlyEquivalent(c) {
+    var a = +c.amount || 0;
+    if (c.recurrence === 'weekly') return a * 52 / 12;
+    if (c.recurrence === 'biweekly') return a * 26 / 12;
+    if (c.recurrence === 'once') { var d = parseISO(c.dueDate); return d && ym(d) === ym(today()) ? a : 0; }
+    return a;
+  }
+  function needsAttention(c) { var k = chargeInfo(c).key; return k === 'overdue' || k === 'today' || k === 'soon'; }
+
+  /* ------------------------------------------------------------------ *
+   * Ícones (SVG inline, sem dependências externas)
+   * ------------------------------------------------------------------ */
+  var ICON = {
+    wa: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.7a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+    undo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></svg>',
+    edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+    cal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
+    save: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>',
+    trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>'
+  };
+
+  /* ------------------------------------------------------------------ *
+   * Renderização
+   * ------------------------------------------------------------------ */
+  var ui = { tab: 'charges', filter: 'all', query: '' };
+  var $ = function (id) { return document.getElementById(id); };
+
+  function renderAll() {
+    renderHeader(); renderKPIs(); renderCharges(); renderExpenses('haras'); renderExpenses('casa'); renderAlerts();
+  }
+
+  function renderHeader() {
+    var t = today();
+    $('hdrSub').textContent = state.settings.businessName + ' • ' + MESES[t.getMonth()] + ' de ' + t.getFullYear();
+    var labels = { charges: 'Animal', haras: 'Despesa', casa: 'Despesa', alerts: 'Animal', settings: 'Animal' };
+    $('hdrAddLabel').textContent = labels[ui.tab];
+    $('hdrAdd').setAttribute('data-action', ui.tab === 'haras' ? 'new-haras' : ui.tab === 'casa' ? 'new-casa' : 'new-charge');
+  }
+
+  function sumExp(list) { return list.reduce(function (s, e) { return s + (+e.amount || 0); }, 0); }
+
+  function renderKPIs() {
+    var receita = state.charges.reduce(function (s, c) { return s + monthlyEquivalent(c); }, 0);
+    var haras = sumExp(state.harasExpenses), casa = sumExp(state.casaExpenses);
+    var saldo = receita - haras - casa;
+    $('kpis').innerHTML =
+      '<div class="kpi"><span>Receita hosp.</span><b>' + money(receita) + '</b></div>' +
+      '<div class="kpi"><span>Desp. Haras</span><b>' + money(haras) + '</b></div>' +
+      '<div class="kpi"><span>Desp. Casa</span><b>' + money(casa) + '</b></div>' +
+      '<div class="kpi ' + (saldo >= 0 ? 'pos' : 'neg') + '"><span>Saldo líquido</span><b>' + money(saldo) + '</b></div>';
+  }
+
+  function chargeCard(c) {
+    var info = chargeInfo(c);
+    var who = c._clientAnimalTotal > 1
+      ? 'Animal ' + c._clientAnimalIndex + ' de ' + c._clientAnimalTotal + ' do cliente'
+      : 'Animal 1 de 1 do cliente';
+    var dayLabel = c.lastBusinessDay ? 'Último dia útil' : c.paymentDayLabel || ('Dia ' + pad(c.paymentDay));
+    var payBtn = c.status === 'paid'
+      ? '<button class="act undo" data-action="undo-pay" data-id="' + esc(c.id) + '">' + ICON.undo + 'Reabrir</button>'
+      : '<button class="act pay" data-action="pay" data-id="' + esc(c.id) + '">' + ICON.check + 'Pago</button>';
+    return '<article class="card charge ' + info.key + '">' +
+      '<div class="num" aria-label="Animal número ' + c._globalIndex + '"><small>Animal</small><b>#' + pad(c._globalIndex) + '</b></div>' +
+      '<div class="c-name">' + esc(c.clientName) + '</div>' +
+      '<div class="c-amount">' + (c.amount ? money(c.amount) : '<span style="color:var(--orange)">R$ —</span>') + '</div>' +
+      '<div class="c-line"><span class="animal">' + esc(c.animalName || '—') + '</span> · ' + who + '</div>' +
+      '<div class="c-meta"><span>' + esc(dayLabel) + '</span><span>·</span><span>vence ' + fmtDateShort(c.dueDate) + '</span>' +
+        '<span class="chip ' + info.chip + '">' + esc(info.label) + '</span>' +
+        (info.detail ? '<span>' + esc(info.detail) + '</span>' : '') + '</div>' +
+      '<div class="c-actions">' +
+        '<button class="act wa" data-action="wa" data-id="' + esc(c.id) + '">' + ICON.wa + 'WhatsApp</button>' +
+        payBtn +
+        '<button class="act" data-action="edit-charge" data-id="' + esc(c.id) + '">' + ICON.edit + 'Editar</button>' +
+        '<button class="act" data-action="ics-one" data-id="' + esc(c.id) + '" aria-label="Adicionar alarme ao Calendário">' + ICON.cal + 'Alarme</button>' +
+      '</div></article>';
+  }
+
+  function renderCharges() {
+    var list = sortedCharges();
+    var counts = { overdue: 0, today: 0, soon: 0, paid: 0, pending: 0 };
+    var clients = {};
+    list.forEach(function (c) { counts[chargeInfo(c).key]++; clients[norm(c.clientName)] = 1; });
+    var nClients = Object.keys(clients).length;
+    $('chargesSub').textContent = list.length + (list.length === 1 ? ' animal hospedado' : ' animais hospedados') + ' • ' +
+      nClients + (nClients === 1 ? ' cliente' : ' clientes') + ' • ordem por dia de pagamento';
+    $('chargeChips').innerHTML =
+      (counts.overdue ? '<span class="chip red">' + counts.overdue + ' atrasado' + (counts.overdue > 1 ? 's' : '') + '</span>' : '') +
+      (counts.today ? '<span class="chip orange">' + counts.today + ' vence' + (counts.today > 1 ? 'm' : '') + ' hoje</span>' : '') +
+      (counts.soon ? '<span class="chip yellow">' + counts.soon + ' em breve</span>' : '') +
+      '<span class="chip">' + counts.pending + ' em aberto</span>' +
+      '<span class="chip green">' + counts.paid + ' pago' + (counts.paid !== 1 ? 's' : '') + '</span>';
+
+    var noValue = list.filter(function (c) { return !c.amount; }).length;
+    var bk = backupAge();
+    $('chargesAlert').innerHTML = (list.length && (bk === null || bk >= BACKUP_REMIND_DAYS)
+      ? '<div class="banner warn"><div style="flex:1">💾 ' + esc(backupText()) + '. Salve uma cópia dos dados fora do app.</div>' +
+        '<button class="act pay" style="flex:none;min-width:0" data-action="export-json">Fazer backup</button></div>' : '') +
+      (noValue ? '<div class="banner info"><div>' + noValue + ' animal(is) sem valor de mensalidade. Toque em <b>Editar</b> para preencher.</div></div>' : '');
+
+    var q = norm(ui.query);
+    var shown = list.filter(function (c) {
+      var k = chargeInfo(c).key;
+      if (ui.filter === 'open' && k === 'paid') return false;
+      if (ui.filter === 'late' && k !== 'overdue') return false;
+      if (ui.filter === 'paid' && k !== 'paid') return false;
+      if (q && norm(c.clientName + ' ' + c.animalName).indexOf(q) < 0) return false;
+      return true;
+    });
+    $('chargeList').innerHTML = shown.length ? shown.map(chargeCard).join('')
+      : !list.length
+        ? '<div class="card empty"><div style="font-size:34px">🐎</div><p style="margin:6px 0 14px"><b>Nenhum animal cadastrado ainda.</b><br>' +
+          'Importe o arquivo de cadastro (.json) que você recebeu ou toque em <b>+ Animal</b>.</p>' +
+          '<button class="btn primary" data-action="import-json">Importar cadastro (.json)</button>' +
+          '<p class="hint" style="margin:6px 0 0">Recebeu pelo WhatsApp? Abra o arquivo › Compartilhar › <b>Salvar em Arquivos</b>, depois toque no botão acima.</p></div>'
+        : '<div class="empty">Nenhum animal encontrado.</div>';
+
+    var att = counts.overdue + counts.today;
+    var b = $('badgeCharges'); b.textContent = att; b.classList.toggle('hidden', !att);
+  }
+
+  function expenseRow(e, kind) {
+    var paid = e.status === 'paid';
+    return '<article class="card exp' + (paid ? ' paid' : '') + '" data-exp="' + esc(e.id) + '">' +
+      '<div><div class="exp-title">' + esc(e.title) + '</div><div class="exp-cat">' + esc(e.category || '—') + '</div></div>' +
+      '<span class="chip ' + (paid ? 'green' : '') + '">' + (paid ? 'Pago' : 'Dia ' + pad(e.dueDay)) + '</span>' +
+      '<div class="exp-inline">' +
+        '<div><label>Valor (R$)</label><input class="field-in" inputmode="decimal" data-field="amount" data-kind="' + kind + '" data-id="' + esc(e.id) + '" value="' + esc(moneyInput(e.amount)) + '" placeholder="0,00"></div>' +
+        '<div><label>Dia venc.</label><input class="field-in" inputmode="numeric" pattern="[0-9]*" maxlength="2" data-field="dueDay" data-kind="' + kind + '" data-id="' + esc(e.id) + '" value="' + esc(e.dueDay) + '"></div>' +
+        '<button class="act pay" style="height:40px" data-action="exp-save" data-kind="' + kind + '" data-id="' + esc(e.id) + '">' + ICON.save + 'Salvar</button>' +
+      '</div>' +
+      '<div class="exp-actions">' +
+        (paid ? '<button class="act undo" data-action="exp-toggle" data-kind="' + kind + '" data-id="' + esc(e.id) + '">' + ICON.undo + 'Reabrir</button>'
+              : '<button class="act" style="color:var(--green)" data-action="exp-toggle" data-kind="' + kind + '" data-id="' + esc(e.id) + '">' + ICON.check + 'Pago</button>') +
+        '<button class="act" data-action="exp-edit" data-kind="' + kind + '" data-id="' + esc(e.id) + '">' + ICON.edit + 'Editar</button>' +
+        '<button class="act danger" style="flex:0 0 auto" data-action="exp-delete" data-kind="' + kind + '" data-id="' + esc(e.id) + '" aria-label="Excluir">' + ICON.trash + '</button>' +
+      '</div></article>';
+  }
+  function expList(kind) { return kind === 'haras' ? state.harasExpenses : state.casaExpenses; }
+  function renderExpenses(kind) {
+    var list = expList(kind).slice().sort(function (a, b) { return a.dueDay - b.dueDay; });
+    var total = sumExp(list), paid = sumExp(list.filter(function (e) { return e.status === 'paid'; }));
+    $(kind + 'Chips').innerHTML =
+      '<span class="chip">' + list.length + ' itens</span>' +
+      '<span class="chip blue">Total ' + money(total) + '</span>' +
+      '<span class="chip green">Pago ' + money(paid) + '</span>' +
+      '<span class="chip ' + (total - paid > 0 ? 'orange' : '') + '">A pagar ' + money(total - paid) + '</span>';
+    $(kind + 'List').innerHTML = (list.length ? list.map(function (e) { return expenseRow(e, kind); }).join('')
+      : '<div class="empty">Nenhuma despesa cadastrada.</div>') +
+      '<button class="btn" style="margin-top:4px" data-action="new-' + kind + '">+ Adicionar despesa</button>';
+  }
+
+  function renderAlerts() {
+    var list = sortedCharges().filter(needsAttention).sort(function (a, b) { return chargeInfo(a).days - chargeInfo(b).days; });
+    $('alertList').innerHTML = list.length ? list.map(chargeCard).join('')
+      : '<div class="card empty">✅ Nenhuma cobrança precisando de atenção agora.</div>';
+    var b = $('badgeAlerts'); b.textContent = list.length; b.classList.toggle('hidden', !list.length);
+    if ('Notification' in window) {
+      $('notifLabel').textContent = Notification.permission === 'granted' ? 'Notificações ativadas ✓ (enviar teste)' : 'Ativar notificações';
+    } else {
+      $('notifLabel').textContent = 'Notificações (instale na Tela de Início)';
+    }
+  }
+
+  function renderSettings() {
+    var s = state.settings;
+    $('setBusiness').value = s.businessName; $('setPix').value = s.pixKey;
+    $('tplPreventive').value = s.tplPreventive; $('tplDueToday').value = s.tplDueToday; $('tplOverdue').value = s.tplOverdue;
+    $('aboutLine').textContent = 'CobrançaFácil v' + APP_VERSION + (storageOK ? ' • dados salvos neste aparelho' : ' • ⚠️ armazenamento bloqueado: faça backup');
+    $('backupStatus').textContent = backupText();
+  }
+  // Dias desde o último backup (null = nunca)
+  function backupAge() {
+    var t = state.meta && state.meta.lastBackupAt; if (!t) return null;
+    var d = new Date(t); if (isNaN(d)) return null;
+    return Math.max(0, diffDays(new Date(d.getFullYear(), d.getMonth(), d.getDate()), today()));
+  }
+  function backupText() {
+    var a = backupAge();
+    if (a === null) return 'Nenhum backup feito ainda';
+    var d = new Date(state.meta.lastBackupAt);
+    return 'Último backup: ' + (a === 0 ? 'hoje' : a === 1 ? 'ontem' : 'há ' + a + ' dias') + ' (' + fmtDate(iso(d)) + ')';
+  }
+
+  function switchTab(tab) {
+    ui.tab = tab;
+    document.querySelectorAll('[data-tab]').forEach(function (s) { s.classList.toggle('hidden', s.id !== 'tab-' + tab); });
+    document.querySelectorAll('[data-tab-btn]').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-tab-btn') === tab); });
+    if (tab === 'settings') renderSettings();
+    renderHeader();
+    window.scrollTo(0, 0);
+    try { sessionStorage.setItem('cf_tab', tab); } catch (e) {}
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Toast / modal
+   * ------------------------------------------------------------------ */
+  var toastTimer;
+  function toast(msg) {
+    var old = document.querySelector('.toast'); if (old) old.remove();
+    var el = document.createElement('div'); el.className = 'toast'; el.textContent = msg;
+    document.body.appendChild(el);
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { el.remove(); }, 2600);
+  }
+  function openSheet(title, bodyHTML, onSave, saveLabel) {
+    var root = $('modalRoot');
+    root.innerHTML = '<div class="backdrop"><div class="sheet" role="dialog" aria-modal="true" aria-label="' + esc(title) + '">' +
+      '<div class="sheet-head"><button data-sheet="cancel">Cancelar</button><h3>' + esc(title) + '</h3>' +
+      (onSave ? '<button class="save" data-sheet="save">' + esc(saveLabel || 'Salvar ✓') + '</button>' : '<button data-sheet="cancel" style="font-weight:600">OK</button>') +
+      '</div><div class="sheet-body">' + bodyHTML + '</div></div></div>';
+    document.body.style.overflow = 'hidden';
+    var bd = root.querySelector('.backdrop');
+    bd.addEventListener('click', function (ev) {
+      if (ev.target === bd || ev.target.closest('[data-sheet="cancel"]')) closeSheet();
+      else if (ev.target.closest('[data-sheet="save"]') && onSave) { if (onSave(root) !== false) closeSheet(); }
+    });
+    return root;
+  }
+  function closeSheet() { $('modalRoot').innerHTML = ''; document.body.style.overflow = ''; }
+
+  /* ------------------------------------------------------------------ *
+   * Cobranças: criar / editar / pagar
+   * ------------------------------------------------------------------ */
+  function findCharge(id) { return state.charges.filter(function (c) { return c.id === id; })[0]; }
+  function opt(v, label, cur) { return '<option value="' + v + '"' + (String(v) === String(cur) ? ' selected' : '') + '>' + label + '</option>'; }
+
+  function openChargeForm(id) {
+    var isNew = !id;
+    var t = today();
+    var c = isNew ? normCharge({ id: uid('chg'), clientName: '', paymentDay: t.getDate(), dueDate: iso(t) }) : findCharge(id);
+    if (!c) return;
+    if (isNew) c.clientName = '';
+    var body =
+      '<div class="group">' +
+        '<div class="row"><label for="fClient">Cliente</label><input id="fClient" value="' + esc(c.clientName) + '" placeholder="Nome do proprietário" autocapitalize="words"></div>' +
+        '<div class="row"><label for="fPhone">WhatsApp</label><input id="fPhone" type="tel" inputmode="tel" value="' + esc(c.clientPhone) + '" placeholder="(DD) 9XXXX-XXXX"></div>' +
+        '<div class="row"><label for="fAnimal">Animal</label><input id="fAnimal" value="' + esc(c.animalName) + '" placeholder="Nome do animal" autocapitalize="words"></div>' +
+        '<div class="row"><label for="fAmount">Mensalidade (R$)</label><input id="fAmount" inputmode="decimal" value="' + esc(moneyInput(c.amount)) + '" placeholder="0,00"></div>' +
+      '</div>' +
+      '<div class="group-title">Vencimento</div>' +
+      '<div class="group">' +
+        '<div class="row"><label for="fRule">Regra</label><select id="fRule">' +
+          opt('day', 'Dia fixo do mês', c.lastBusinessDay ? 'lbd' : 'day') + opt('lbd', 'Último dia útil', c.lastBusinessDay ? 'lbd' : 'day') + '</select></div>' +
+        '<div class="row" id="fDayRow"><label for="fDay">Dia do pagamento</label><input id="fDay" inputmode="numeric" pattern="[0-9]*" maxlength="2" value="' + c.paymentDay + '"></div>' +
+        '<div class="row"><label for="fLabel">Descrição do dia</label><input id="fLabel" value="' + esc(c.paymentDayLabel) + '" placeholder="Ex.: Vence entre dia 30 e 05"></div>' +
+        '<div class="row"><label for="fDue">Próximo vencimento</label><input id="fDue" type="date" value="' + esc(c.dueDate) + '"></div>' +
+        '<div class="row"><label for="fRec">Repetição</label><select id="fRec">' +
+          opt('monthly', 'Mensal', c.recurrence) + opt('biweekly', 'Quinzenal', c.recurrence) + opt('weekly', 'Semanal', c.recurrence) + opt('once', 'Uma vez', c.recurrence) + '</select></div>' +
+      '</div>' +
+      '<div class="group-title">Aviso</div>' +
+      '<div class="group">' +
+        '<div class="row"><label for="fTime">Horário</label><input id="fTime" type="time" value="' + esc(c.reminderTime) + '"></div>' +
+        '<div class="row"><label for="fAdv">Antecedência</label><select id="fAdv">' +
+          opt(0, 'No dia', c.advanceDays) + opt(1, '1 dia antes', c.advanceDays) + opt(2, '2 dias antes', c.advanceDays) + opt(3, '3 dias antes', c.advanceDays) + opt(5, '5 dias antes', c.advanceDays) + '</select></div>' +
+      '</div>' +
+      '<div class="group">' +
+        '<div class="row"><label for="fService">Serviço</label><input id="fService" value="' + esc(c.service) + '" placeholder="Animal: Nome (Hospedagem)"></div>' +
+        '<div class="row"><label for="fStatus">Situação</label><select id="fStatus">' + opt('pending', 'Em aberto', c.status) + opt('paid', 'Pago', c.status) + '</select></div>' +
+        '<div class="row col"><label for="fNotes">Observações</label><textarea id="fNotes">' + esc(c.notes) + '</textarea></div>' +
+      '</div>' +
+      (!isNew && c.payments.length ? '<div class="group-title">Pagamentos registrados</div><div class="group">' +
+        c.payments.slice(-6).reverse().map(function (p) {
+          return '<div class="row"><label>Ref. ' + fmtDate(p.ref) + '</label><span style="flex:1;text-align:right;color:var(--muted)">' + money(p.amount) + ' • pago ' + fmtDate(p.paidAt) + '</span></div>';
+        }).join('') + '</div>' +
+        '<button class="btn" data-local="undo-last">Desfazer último pagamento</button>' : '') +
+      (!isNew ? '<button class="btn danger" data-local="delete">Excluir animal</button>' : '');
+
+    var root = openSheet(isNew ? 'Novo animal' : 'Editar animal', body, function (r) {
+      var client = r.querySelector('#fClient').value.trim();
+      if (!client) { toast('Informe o nome do cliente.'); r.querySelector('#fClient').focus(); return false; }
+      var animal = r.querySelector('#fAnimal').value.trim();
+      var lbd = r.querySelector('#fRule').value === 'lbd';
+      var day = lbd ? 30 : clampDay(r.querySelector('#fDay').value);
+      var label = r.querySelector('#fLabel').value.trim();
+      var due = r.querySelector('#fDue').value;
+      var oldAnimal = c.animalName;
+      c.clientName = client;
+      c.clientPhone = maskPhone(r.querySelector('#fPhone').value);
+      c.animalName = animal;
+      c.amount = parseMoneyBR(r.querySelector('#fAmount').value);
+      c.lastBusinessDay = lbd;
+      c.paymentDay = day;
+      c.paymentDayLabel = label || (lbd ? 'Último dia útil do mês' : 'Todo dia ' + pad(day));
+      c.dueDate = parseISO(due) ? due : iso(dueInMonth(c, today().getFullYear(), today().getMonth()));
+      c.recurrence = r.querySelector('#fRec').value;
+      c.reminderTime = r.querySelector('#fTime').value || '09:00';
+      c.advanceDays = +r.querySelector('#fAdv').value;
+      var svc = r.querySelector('#fService').value.trim();
+      c.service = (!svc || svc === 'Animal: ' + oldAnimal + ' (Hospedagem)') ? 'Animal: ' + (animal || '—') + ' (Hospedagem)' : svc;
+      c.status = r.querySelector('#fStatus').value;
+      c.notes = r.querySelector('#fNotes').value;
+      if (isNew) state.charges.push(c);
+      saveState(); renderAll();
+      toast(isNew ? 'Animal cadastrado ✓' : 'Alterações salvas ✓');
+    });
+
+    var dayRow = root.querySelector('#fDayRow');
+    var syncRule = function () { dayRow.classList.toggle('hidden', root.querySelector('#fRule').value === 'lbd'); };
+    syncRule();
+    // Ao mudar o dia/regra, recalcula o vencimento mantendo o mês escolhido.
+    var recalcDue = function () {
+      var dueEl = root.querySelector('#fDue');
+      var cur = parseISO(dueEl.value) || today();
+      var tmp = { paymentDay: clampDay(root.querySelector('#fDay').value), lastBusinessDay: root.querySelector('#fRule').value === 'lbd' };
+      dueEl.value = iso(dueInMonth(tmp, cur.getFullYear(), cur.getMonth()));
+      var lab = root.querySelector('#fLabel');
+      if (!lab.dataset.touched) lab.value = tmp.lastBusinessDay ? 'Último dia útil do mês' : 'Todo dia ' + pad(tmp.paymentDay);
+    };
+    root.querySelector('#fLabel').addEventListener('input', function () { this.dataset.touched = '1'; });
+    root.querySelector('#fRule').addEventListener('change', function () { syncRule(); recalcDue(); });
+    root.querySelector('#fDay').addEventListener('change', recalcDue);
+    root.querySelector('#fPhone').addEventListener('input', function () { this.value = maskPhone(this.value); });
+    root.querySelectorAll('[data-local]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var what = b.getAttribute('data-local');
+        if (what === 'delete') {
+          if (!confirm('Excluir ' + (c.animalName || 'este animal') + ' (' + c.clientName + ')?')) return;
+          state.charges = state.charges.filter(function (x) { return x.id !== c.id; });
+          saveState(); renderAll(); closeSheet(); toast('Animal excluído');
+        } else if (what === 'undo-last') {
+          undoPayment(c); closeSheet();
+        }
+      });
+    });
+  }
+
+  function markPaid(c) {
+    c.payments.push({ ref: c.dueDate, amount: c.amount, paidAt: iso(today()) });
+    if (c.recurrence === 'once') { c.status = 'paid'; }
+    else {
+      c.dueDate = iso(nextDueDate(c));
+      c.status = today() >= cycleOpenDate(c) ? 'pending' : 'paid';
+    }
+    saveState(); renderAll();
+    toast(c.status === 'paid' ? 'Pago ✓ Próximo vencimento ' + fmtDate(c.dueDate) : 'Pago ✓ Próxima parcela já está em aberto (' + fmtDate(c.dueDate) + ')');
+  }
+  function undoPayment(c) {
+    var last = c.payments.pop();
+    if (last) c.dueDate = last.ref;
+    c.status = 'pending';
+    saveState(); renderAll(); toast('Pagamento desfeito — vencimento ' + fmtDate(c.dueDate));
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Despesas
+   * ------------------------------------------------------------------ */
+  function findExp(kind, id) { return expList(kind).filter(function (e) { return e.id === id; })[0]; }
+  function openExpenseForm(kind, id) {
+    var isNew = !id;
+    var e = isNew ? normExpense({ id: uid(kind), title: '', category: kind === 'haras' ? 'Haras' : 'Casa' }, kind) : findExp(kind, id);
+    if (!e) return;
+    if (isNew) e.title = '';
+    var body =
+      '<div class="group">' +
+        '<div class="row"><label for="eTitle">Descrição</label><input id="eTitle" value="' + esc(e.title) + '" placeholder="Ex.: Ração Peletizada"></div>' +
+        '<div class="row"><label for="eCat">Categoria</label><input id="eCat" value="' + esc(e.category) + '"></div>' +
+        '<div class="row"><label for="eAmount">Valor (R$)</label><input id="eAmount" inputmode="decimal" value="' + esc(moneyInput(e.amount)) + '" placeholder="0,00"></div>' +
+        '<div class="row"><label for="eDay">Dia do vencimento</label><input id="eDay" inputmode="numeric" pattern="[0-9]*" maxlength="2" value="' + e.dueDay + '"></div>' +
+        '<div class="row"><label for="eStatus">Situação no mês</label><select id="eStatus">' + opt('pending', 'Em aberto', e.status) + opt('paid', 'Pago', e.status) + '</select></div>' +
+      '</div>' +
+      (!isNew ? '<button class="btn danger" data-local="delete">Excluir despesa</button>' : '');
+    var root = openSheet(isNew ? 'Nova despesa' : 'Editar despesa', body, function (r) {
+      var title = r.querySelector('#eTitle').value.trim();
+      if (!title) { toast('Informe a descrição.'); return false; }
+      e.title = title;
+      e.category = r.querySelector('#eCat').value.trim();
+      e.amount = parseMoneyBR(r.querySelector('#eAmount').value);
+      e.dueDay = clampDay(r.querySelector('#eDay').value);
+      var st = r.querySelector('#eStatus').value;
+      if (st !== e.status) { e.status = st; e.paidMonth = st === 'paid' ? ym(today()) : null; }
+      if (isNew) expList(kind).push(e);
+      saveState(); renderAll(); toast('Despesa salva ✓');
+    });
+    var del = root.querySelector('[data-local="delete"]');
+    if (del) del.addEventListener('click', function () { deleteExpense(kind, e.id); closeSheet(); });
+  }
+  function deleteExpense(kind, id) {
+    var e = findExp(kind, id); if (!e) return;
+    if (!confirm('Excluir a despesa "' + e.title + '"?')) return;
+    if (kind === 'haras') state.harasExpenses = state.harasExpenses.filter(function (x) { return x.id !== id; });
+    else state.casaExpenses = state.casaExpenses.filter(function (x) { return x.id !== id; });
+    saveState(); renderAll(); toast('Despesa excluída');
+  }
+  function saveInlineExpense(kind, id) {
+    var e = findExp(kind, id); if (!e) return;
+    var card = document.querySelector('[data-exp="' + CSS.escape(id) + '"]');
+    e.amount = parseMoneyBR(card.querySelector('[data-field="amount"]').value);
+    e.dueDay = clampDay(card.querySelector('[data-field="dueDay"]').value);
+    saveState(); renderAll(); toast(e.title + ': ' + money(e.amount) + ' • dia ' + pad(e.dueDay) + ' ✓');
+  }
+  // KPIs em tempo real durante a digitação (sem perder o foco do campo)
+  function liveExpenseInput(input) {
+    var e = findExp(input.getAttribute('data-kind'), input.getAttribute('data-id')); if (!e) return;
+    if (input.getAttribute('data-field') === 'amount') { e.amount = parseMoneyBR(input.value); renderKPIs(); }
+  }
+
+  /* ------------------------------------------------------------------ *
+   * WhatsApp / PIX
+   * ------------------------------------------------------------------ */
+  function fillTemplate(tpl, c) {
+    var info = chargeInfo(c);
+    var map = {
+      cliente: c.clientName, animal: c.animalName || 'animal', valor: money(c.amount), vencimento: fmtDate(c.dueDate),
+      dias: String(Math.max(0, -info.days)), pix: state.settings.pixKey || '(informe a chave PIX nos Ajustes)', empresa: state.settings.businessName
+    };
+    return String(tpl).replace(/\{(\w+)\}/g, function (m, k) { return k in map ? map[k] : m; });
+  }
+  function openWhatsApp(id) {
+    var c = findCharge(id); if (!c) return;
+    var key = chargeInfo(c).key;
+    var tone = key === 'overdue' ? 'tplOverdue' : key === 'today' ? 'tplDueToday' : 'tplPreventive';
+    var body =
+      '<p class="sub" style="margin:0 0 10px"><b>' + esc(c.clientName) + '</b> • ' + esc(c.animalName) + ' • ' + money(c.amount) + ' • vence ' + fmtDate(c.dueDate) + '</p>' +
+      '<div class="tone">' +
+        '<button data-tone="tplPreventive">Preventivo</button><button data-tone="tplDueToday">Vence hoje</button><button data-tone="tplOverdue">Em atraso</button>' +
+      '</div>' +
+      '<textarea class="msg" id="waMsg"></textarea>' +
+      '<div class="group" style="margin-top:12px"><div class="row"><label for="waPhone">WhatsApp</label><input id="waPhone" type="tel" inputmode="tel" value="' + esc(c.clientPhone) + '" placeholder="(DD) 9XXXX-XXXX"></div></div>' +
+      (state.settings.pixKey ? '' : '<div class="banner info"><div>Cadastre sua chave PIX em <b>Ajustes</b> para ela aparecer na mensagem.</div></div>') +
+      '<button class="btn primary" id="waOpen" style="background:#25a244">' + ICON.wa + ' Abrir no WhatsApp</button>' +
+      '<button class="btn" id="waCopy">Copiar mensagem</button>';
+    var root = openSheet('Mensagem de cobrança', body, null);
+    var setTone = function (t) {
+      tone = t;
+      root.querySelectorAll('[data-tone]').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-tone') === t); });
+      root.querySelector('#waMsg').value = fillTemplate(state.settings[t], c);
+    };
+    setTone(tone);
+    root.querySelectorAll('[data-tone]').forEach(function (b) { b.addEventListener('click', function () { setTone(b.getAttribute('data-tone')); }); });
+    var phoneEl = root.querySelector('#waPhone');
+    phoneEl.addEventListener('input', function () { this.value = maskPhone(this.value); });
+    root.querySelector('#waOpen').addEventListener('click', function () {
+      var ph = digits(phoneEl.value);
+      if (ph && ph !== digits(c.clientPhone)) { c.clientPhone = maskPhone(ph); saveState(); }
+      if (ph && ph.length <= 11) ph = '55' + ph;
+      var url = 'https://wa.me/' + ph + '?text=' + encodeURIComponent(root.querySelector('#waMsg').value);
+      window.open(url, '_blank');
+    });
+    root.querySelector('#waCopy').addEventListener('click', function () { copyText(root.querySelector('#waMsg').value); });
+  }
+  function copyText(text) {
+    var fallback = function () {
+      var ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta);
+      ta.select(); ta.setSelectionRange(0, text.length);
+      var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+      ta.remove(); toast(ok ? 'Mensagem copiada ✓' : 'Não foi possível copiar');
+    };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(function () { toast('Mensagem copiada ✓'); }, fallback);
+    else fallback();
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Arquivos: .ics / .csv / .json
+   * ------------------------------------------------------------------ */
+  // Abre o menu "Compartilhar" do iPhone (Salvar em Arquivos, WhatsApp, e-mail, AirDrop…).
+  // Onde não existir, baixa o arquivo normalmente. Resolve true se o arquivo foi entregue.
+  function shareOrDownload(filename, content, mime, title) {
+    var file = null;
+    try { file = new File([content], filename, { type: mime }); } catch (e) {}
+    if (file && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      return navigator.share({ files: [file], title: title || filename }).then(function () { return true; }, function (err) {
+        if (err && err.name === 'AbortError') return false; // usuário cancelou
+        download(filename, content, mime); return true;
+      });
+    }
+    download(filename, content, mime);
+    return Promise.resolve(true);
+  }
+  function markBackupDone() {
+    state.meta.lastBackupAt = new Date().toISOString();
+    saveState(); renderCharges(); if (ui.tab === 'settings') renderSettings();
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Cadastro de animais e proprietários (JSON organizado por proprietário)
+   * ------------------------------------------------------------------ */
+  var REC_PT = { monthly: 'mensal', biweekly: 'quinzenal', weekly: 'semanal', once: 'uma-vez' };
+  var REC_EN = { mensal: 'monthly', quinzenal: 'biweekly', semanal: 'weekly', 'uma-vez': 'once' };
+  function buildCadastro() {
+    var list = sortedCharges(), owners = [], byKey = {};
+    list.forEach(function (c) {
+      var k = norm(c.clientName), o = byKey[k];
+      if (!o) { o = byKey[k] = { nome: c.clientName, telefone: c.clientPhone || '', totalAnimais: 0, mensalidadeTotal: 0, animais: [] }; owners.push(o); }
+      if (!o.telefone && c.clientPhone) o.telefone = c.clientPhone;
+      o.animais.push({
+        id: c.id,
+        numeroGeral: c._globalIndex,
+        numeroNoCliente: c._clientAnimalIndex + ' de ' + c._clientAnimalTotal,
+        nome: c.animalName,
+        mensalidade: +c.amount || 0,
+        diaPagamento: c.paymentDay,
+        regraDia: c.lastBusinessDay ? 'ultimo-dia-util' : 'dia-fixo',
+        descricaoDia: c.paymentDayLabel,
+        proximoVencimento: c.dueDate,
+        situacao: c.status === 'paid' ? 'pago' : 'em-aberto',
+        repeticao: REC_PT[c.recurrence] || 'mensal',
+        aviso: { horario: c.reminderTime, antecedenciaDias: c.advanceDays },
+        servico: c.service,
+        observacoes: c.notes,
+        pagamentos: c.payments.map(function (p) { return { referencia: p.ref, valor: p.amount, pagoEm: p.paidAt }; })
+      });
+      o.totalAnimais++; o.mensalidadeTotal = Math.round((o.mensalidadeTotal + (+c.amount || 0)) * 100) / 100;
+    });
+    var expOut = function (l) {
+      return l.slice().sort(function (a, b) { return a.dueDay - b.dueDay; }).map(function (e) {
+        return { id: e.id, descricao: e.title, categoria: e.category, valor: +e.amount || 0, diaVencimento: e.dueDay,
+          situacao: e.status === 'paid' ? 'pago' : 'em-aberto', mesPago: e.paidMonth };
+      });
+    };
+    var s = state.settings;
+    return {
+      app: 'CobrancaFacil', tipo: 'cadastro-haras', versao: 2,
+      geradoEm: new Date().toISOString(),
+      resumo: { totalProprietarios: owners.length, totalAnimais: list.length,
+        receitaMensal: Math.round(list.reduce(function (s, c) { return s + (+c.amount || 0); }, 0) * 100) / 100,
+        despesasHaras: sumExp(state.harasExpenses), despesasCasa: sumExp(state.casaExpenses) },
+      proprietarios: owners,
+      despesasHaras: expOut(state.harasExpenses),
+      despesasCasa: expOut(state.casaExpenses),
+      ajustes: { nomeNegocio: s.businessName, chavePix: s.pixKey,
+        mensagens: { preventiva: s.tplPreventive, venceHoje: s.tplDueToday, emAtraso: s.tplOverdue } }
+    };
+  }
+  function cadastroToExpenses(list) {
+    return list.map(function (e) {
+      return { id: e.id, title: e.descricao, category: e.categoria, amount: e.valor, dueDay: e.diaVencimento,
+        status: e.situacao === 'pago' ? 'paid' : 'pending', paidMonth: e.mesPago || null };
+    });
+  }
+  function cadastroToSettings(a, cur) {
+    if (!a) return cur;
+    var m = a.mensagens || {};
+    return { businessName: a.nomeNegocio || cur.businessName, pixKey: a.chavePix != null ? a.chavePix : cur.pixKey,
+      tplPreventive: m.preventiva || cur.tplPreventive, tplDueToday: m.venceHoje || cur.tplDueToday, tplOverdue: m.emAtraso || cur.tplOverdue };
+  }
+  // Converte o formato "cadastro" de volta para a lista interna de cobranças.
+  function cadastroToCharges(data) {
+    var out = [];
+    (data.proprietarios || []).forEach(function (o) {
+      (o.animais || []).forEach(function (a) {
+        out.push({
+          id: a.id, clientName: o.nome, clientPhone: a.telefone || o.telefone || '', animalName: a.nome,
+          amount: a.mensalidade, paymentDay: a.diaPagamento, lastBusinessDay: a.regraDia === 'ultimo-dia-util',
+          paymentDayLabel: a.descricaoDia, dueDate: a.proximoVencimento,
+          status: a.situacao === 'pago' ? 'paid' : 'pending', recurrence: REC_EN[a.repeticao] || 'monthly',
+          reminderTime: a.aviso && a.aviso.horario, advanceDays: a.aviso && a.aviso.antecedenciaDias,
+          service: a.servico, notes: a.observacoes,
+          payments: (a.pagamentos || []).map(function (p) { return { ref: p.referencia, amount: p.valor, paidAt: p.pagoEm }; })
+        });
+      });
+    });
+    return out;
+  }
+
+  function download(filename, content, mime) {
+    var blob = new Blob([content], { type: mime });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a'); a.href = url; a.download = filename; a.rel = 'noopener';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  }
+  function icsEsc(s) { return String(s || '').replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n'); }
+  function icsFold(line) {
+    var out = [], cur = '', bytes = 0, chars = Array.from(line);
+    for (var i = 0; i < chars.length; i++) {
+      var ch = chars[i], b = new TextEncoder().encode(ch).length;
+      if (bytes + b > 73) { out.push(cur); cur = ' '; bytes = 1; }
+      cur += ch; bytes += b;
+    }
+    out.push(cur); return out.join('\r\n');
+  }
+  function icsEvent(c) {
+    var due = parseISO(c.dueDate) || today();
+    var tm = (c.reminderTime || '09:00').split(':');
+    var dt = due.getFullYear() + pad(due.getMonth() + 1) + pad(due.getDate()) + 'T' + pad(+tm[0]) + pad(+tm[1]) + '00';
+    var end = new Date(due.getFullYear(), due.getMonth(), due.getDate(), +tm[0], +tm[1] + 15);
+    var dtEnd = end.getFullYear() + pad(end.getMonth() + 1) + pad(end.getDate()) + 'T' + pad(end.getHours()) + pad(end.getMinutes()) + '00';
+    var stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
+    var rrule = null;
+    if (c.recurrence === 'monthly') {
+      if (c.lastBusinessDay) rrule = 'FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1';
+      else if (c.paymentDay <= 28) rrule = 'FREQ=MONTHLY;BYMONTHDAY=' + c.paymentDay;
+      else { var days = []; for (var d = 28; d <= c.paymentDay; d++) days.push(d); rrule = 'FREQ=MONTHLY;BYMONTHDAY=' + days.join(',') + ';BYSETPOS=-1'; }
+    } else if (c.recurrence === 'weekly') rrule = 'FREQ=WEEKLY';
+    else if (c.recurrence === 'biweekly') rrule = 'FREQ=WEEKLY;INTERVAL=2';
+    var title = 'Cobrar ' + c.clientName + ' — ' + (c.animalName || 'Hospedagem') + (c.amount ? ' (' + money(c.amount) + ')' : '');
+    var desc = c.service + '\n' + (c.paymentDayLabel || '') + (c.clientPhone ? '\nWhatsApp: ' + c.clientPhone : '') + (c.notes ? '\n' + c.notes : '');
+    var lines = ['BEGIN:VEVENT', 'UID:' + c.id + '@cobrancafacil', 'DTSTAMP:' + stamp, 'DTSTART:' + dt, 'DTEND:' + dtEnd];
+    if (rrule) lines.push('RRULE:' + rrule);
+    lines.push('SUMMARY:' + icsEsc(title), 'DESCRIPTION:' + icsEsc(desc),
+      'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsEsc(title), 'TRIGGER:PT0M', 'END:VALARM');
+    if (+c.advanceDays > 0) lines.push('BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsEsc('Em ' + c.advanceDays + ' dia(s): ' + title), 'TRIGGER:-P' + c.advanceDays + 'D', 'END:VALARM');
+    lines.push('END:VEVENT');
+    return lines;
+  }
+  function buildICS(list) {
+    var lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//CobrancaFacil//Haras//PT-BR', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'X-WR-CALNAME:Cobranças Haras'];
+    list.forEach(function (c) { lines = lines.concat(icsEvent(c)); });
+    lines.push('END:VCALENDAR');
+    return lines.map(icsFold).join('\r\n') + '\r\n';
+  }
+  function slug(s) { return norm(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'cobranca'; }
+
+  function csvCell(v) { v = String(v == null ? '' : v); return /[";\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+  function num(v) { return (+v || 0).toFixed(2).replace('.', ','); }
+  function buildCSV() {
+    var rows = [['Tipo', 'Nº geral', 'Nº no cliente', 'Cliente', 'Telefone', 'Animal / Descrição', 'Categoria', 'Dia', 'Regra do dia', 'Vencimento', 'Valor (R$)', 'Situação', 'Observações']];
+    sortedCharges().forEach(function (c) {
+      rows.push(['Hospedagem', c._globalIndex, c._clientAnimalIndex + '/' + c._clientAnimalTotal, c.clientName, c.clientPhone, c.animalName, 'Hospedagem',
+        c.paymentDay, c.paymentDayLabel, fmtDate(c.dueDate), num(c.amount), chargeInfo(c).label, c.notes]);
+    });
+    [['Despesa Haras', state.harasExpenses], ['Despesa Casa', state.casaExpenses]].forEach(function (pair) {
+      pair[1].forEach(function (e) {
+        rows.push([pair[0], '', '', '', '', e.title, e.category, e.dueDay, '', '', num(e.amount), e.status === 'paid' ? 'Pago' : 'Em aberto', '']);
+      });
+    });
+    return '\ufeff' + rows.map(function (r) { return r.map(csvCell).join(';'); }).join('\r\n');
+  }
+  function importBackup(file) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var data = JSON.parse(reader.result);
+        var cur = state;
+        if (data && Array.isArray(data.proprietarios)) {
+          // Arquivo de cadastro: troca o que vier no arquivo; o que não vier (ex.: despesas) continua como está.
+          var charges = cadastroToCharges(data);
+          var hasH = Array.isArray(data.despesasHaras), hasC = Array.isArray(data.despesasCasa);
+          if (!confirm('Importar cadastro? ' + data.proprietarios.length + ' proprietários, ' + charges.length + ' animais' +
+            (hasH || hasC ? ', despesas do Haras e da Casa' : '') + (data.ajustes ? ' e ajustes' : '') +
+            '. Isso substitui os dados atuais desses itens.')) return;
+          state = buildState({ charges: charges,
+            harasExpenses: hasH ? cadastroToExpenses(data.despesasHaras) : cur.harasExpenses,
+            casaExpenses: hasC ? cadastroToExpenses(data.despesasCasa) : cur.casaExpenses,
+            settings: cadastroToSettings(data.ajustes, cur.settings), meta: cur.meta });
+          rollover(); saveState(); renderAll(); renderSettings(); toast('Cadastro importado ✓ (' + charges.length + ' animais)');
+          return;
+        }
+        if (!data || (!Array.isArray(data.charges) && !Array.isArray(data.harasExpenses) && !Array.isArray(data.casaExpenses))) throw new Error('formato');
+        if (!confirm('Substituir os dados atuais pelo backup? (' + (data.charges ? data.charges.length : 0) + ' animais)')) return;
+        state = buildState({
+          charges: Array.isArray(data.charges) ? data.charges : cur.charges,
+          harasExpenses: Array.isArray(data.harasExpenses) ? data.harasExpenses : cur.harasExpenses,
+          casaExpenses: Array.isArray(data.casaExpenses) ? data.casaExpenses : cur.casaExpenses,
+          settings: data.settings || cur.settings,
+          meta: cur.meta
+        });
+        rollover(); saveState(); renderAll(); renderSettings(); toast('Backup restaurado ✓');
+      } catch (e) { toast('Arquivo de backup inválido.'); }
+    };
+    reader.readAsText(file);
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Som e notificações
+   * ------------------------------------------------------------------ */
+  var audioCtx = null;
+  function playChime() {
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+      audioCtx = audioCtx || new AC();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      var t0 = audioCtx.currentTime;
+      [587.33, 880.0, 1174.66].forEach(function (f, i) {
+        var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = 'sine'; o.frequency.value = f;
+        var s = t0 + i * 0.12;
+        g.gain.setValueAtTime(0.0001, s);
+        g.gain.exponentialRampToValueAtTime(0.22, s + 0.03);
+        g.gain.exponentialRampToValueAtTime(0.0001, s + 1.3);
+        o.connect(g); g.connect(audioCtx.destination); o.start(s); o.stop(s + 1.35);
+      });
+    } catch (e) {}
+  }
+  function showNotification(title, body) {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return false;
+    var opts = { body: body, icon: 'icons/icon-192.png', badge: 'icons/icon-192.png', tag: 'cobranca-' + iso(today()) };
+    if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
+      navigator.serviceWorker.getRegistration().then(function (reg) {
+        if (reg && reg.showNotification) reg.showNotification(title, opts);
+        else try { new Notification(title, opts); } catch (e) {}
+      });
+    } else { try { new Notification(title, opts); } catch (e) {} }
+    return true;
+  }
+  function enableNotifications() {
+    if (!('Notification' in window)) { toast('No iPhone, instale o app na Tela de Início para ativar notificações.'); return; }
+    if (Notification.permission === 'granted') { showNotification('CobrançaFácil', 'Teste de notificação ✓'); playChime(); return; }
+    Notification.requestPermission().then(function (p) {
+      renderAlerts();
+      if (p === 'granted') { showNotification('CobrançaFácil', 'Notificações ativadas ✓'); toast('Notificações ativadas ✓'); }
+      else toast('Permissão negada. Ative em Ajustes do iPhone › Notificações.');
+    });
+  }
+  // Ao abrir o app: avisa uma vez por dia por cobrança que precise de atenção.
+  function checkReminders() {
+    var t = iso(today());
+    var due = state.charges.filter(function (c) { return needsAttention(c) && c.lastNotifiedDate !== t; });
+    if (!due.length) return;
+    var late = due.filter(function (c) { return chargeInfo(c).key === 'overdue'; }).length;
+    var names = due.slice(0, 4).map(function (c) { return c.clientName + ' (' + (c.animalName || '—') + ')'; }).join(', ') + (due.length > 4 ? '…' : '');
+    var title = due.length + ' cobrança' + (due.length > 1 ? 's' : '') + ' para fazer' + (late ? ' • ' + late + ' atrasada' + (late > 1 ? 's' : '') : '');
+    showNotification(title, names);
+    toast('🔔 ' + title);
+    var unlock = function () { playChime(); document.removeEventListener('touchend', unlock); document.removeEventListener('click', unlock); };
+    playChime(); // pode ser bloqueado pelo iOS até o primeiro toque
+    document.addEventListener('touchend', unlock, { once: true }); document.addEventListener('click', unlock, { once: true });
+    due.forEach(function (c) { c.lastNotifiedDate = t; });
+    saveState();
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Eventos
+   * ------------------------------------------------------------------ */
+  document.addEventListener('click', function (ev) {
+    var tb = ev.target.closest('[data-tab-btn]');
+    if (tb) { switchTab(tb.getAttribute('data-tab-btn')); return; }
+    var fb = ev.target.closest('[data-filter]');
+    if (fb) {
+      ui.filter = fb.getAttribute('data-filter');
+      document.querySelectorAll('[data-filter]').forEach(function (b) { b.classList.toggle('on', b === fb); });
+      renderCharges(); return;
+    }
+    var el = ev.target.closest('[data-action]');
+    if (!el || el.closest('#modalRoot')) return;
+    var a = el.getAttribute('data-action'), id = el.getAttribute('data-id'), kind = el.getAttribute('data-kind');
+    var c;
+    switch (a) {
+      case 'new-charge': openChargeForm(null); break;
+      case 'edit-charge': openChargeForm(id); break;
+      case 'pay': c = findCharge(id); if (c) markPaid(c); break;
+      case 'undo-pay': c = findCharge(id); if (c) undoPayment(c); break;
+      case 'wa': openWhatsApp(id); break;
+      case 'ics-one':
+        c = findCharge(id);
+        if (c) { download('alarme-' + slug(c.clientName + '-' + c.animalName) + '.ics', buildICS([c]), 'text/calendar;charset=utf-8'); toast('Abra o arquivo para adicionar ao Calendário'); }
+        break;
+      case 'ics-all':
+        download('alarmes-cobrancas-haras.ics', buildICS(sortedCharges()), 'text/calendar;charset=utf-8');
+        toast(state.charges.length + ' alarmes gerados — abra o arquivo para adicionar ao Calendário'); break;
+      case 'new-haras': openExpenseForm('haras', null); break;
+      case 'new-casa': openExpenseForm('casa', null); break;
+      case 'exp-save': saveInlineExpense(kind, id); break;
+      case 'exp-edit': openExpenseForm(kind, id); break;
+      case 'exp-delete': deleteExpense(kind, id); break;
+      case 'exp-toggle':
+        var e = findExp(kind, id);
+        if (e) {
+          var card = document.querySelector('[data-exp="' + CSS.escape(id) + '"]');
+          if (card) { e.amount = parseMoneyBR(card.querySelector('[data-field="amount"]').value); e.dueDay = clampDay(card.querySelector('[data-field="dueDay"]').value); }
+          e.status = e.status === 'paid' ? 'pending' : 'paid'; e.paidMonth = e.status === 'paid' ? ym(today()) : null;
+          saveState(); renderAll(); toast(e.title + (e.status === 'paid' ? ' marcada como paga ✓' : ' reaberta'));
+        }
+        break;
+      case 'enable-notif': enableNotifications(); break;
+      case 'test-sound': playChime(); toast('🔔 Som de lembrete'); break;
+      case 'save-settings':
+        state.settings.businessName = $('setBusiness').value.trim() || 'Haras';
+        state.settings.pixKey = $('setPix').value.trim();
+        state.settings.tplPreventive = $('tplPreventive').value || DEFAULT_TEMPLATES.tplPreventive;
+        state.settings.tplDueToday = $('tplDueToday').value || DEFAULT_TEMPLATES.tplDueToday;
+        state.settings.tplOverdue = $('tplOverdue').value || DEFAULT_TEMPLATES.tplOverdue;
+        saveState(); renderAll(); renderSettings(); toast('Ajustes salvos ✓'); break;
+      case 'reset-templates':
+        for (var k in DEFAULT_TEMPLATES) state.settings[k] = DEFAULT_TEMPLATES[k];
+        saveState(); renderSettings(); toast('Mensagens padrão restauradas'); break;
+      case 'export-csv':
+        shareOrDownload('cobrancafacil-' + iso(today()) + '.csv', buildCSV(), 'text/csv', 'Planilha CobrançaFácil'); break;
+      case 'export-json':
+        shareOrDownload('cadastro-haras-' + iso(today()) + '.json', JSON.stringify(buildCadastro(), null, 2) + '\n',
+          'application/json', 'Cadastro do Haras').then(function (ok) {
+          if (ok) { markBackupDone(); toast('Backup salvo ✓'); }
+        });
+        break;
+      case 'import-json': $('importFile').click(); break;
+      case 'reset-all':
+        if (!confirm('Apagar todos os animais, despesas e ajustes deste aparelho? Faça um backup antes.')) return;
+        state = buildState(null); rollover(); saveState(); renderAll(); renderSettings(); toast('Dados apagados'); break;
+    }
+  });
+  document.addEventListener('input', function (ev) {
+    var t = ev.target;
+    if (t.id === 'search') { ui.query = t.value; renderCharges(); }
+    else if (t.matches && t.matches('.exp-inline [data-field]')) liveExpenseInput(t);
+  });
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Enter' && ev.target.matches && ev.target.matches('.exp-inline [data-field]')) {
+      ev.preventDefault(); saveInlineExpense(ev.target.getAttribute('data-kind'), ev.target.getAttribute('data-id'));
+    }
+    if (ev.key === 'Escape' && $('modalRoot').innerHTML) closeSheet();
+  });
+  $('importFile').addEventListener('change', function () { if (this.files[0]) importBackup(this.files[0]); this.value = ''; });
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible' && state) { if (rollover()) saveState(); renderAll(); checkReminders(); }
+  });
+
+  /* ------------------------------------------------------------------ *
+   * Início
+   * ------------------------------------------------------------------ */
+  function init() {
+    state = buildState(readStore());
+    rollover(); saveState();
+    renderAll();
+    var startTab = 'charges';
+    try { startTab = sessionStorage.getItem('cf_tab') || 'charges'; } catch (e) {}
+    switchTab(document.getElementById('tab-' + startTab) ? startTab : 'charges');
+    setTimeout(checkReminders, 600);
+    if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+
+  // Exposto para testes no console
+  window.CobrancaFacil = { parseMoneyBR: parseMoneyBR, buildICS: buildICS, buildCadastro: buildCadastro,
+    cadastroToCharges: cadastroToCharges, get state() { return state; } };
+})();
+</script>
+</body>
+</html>

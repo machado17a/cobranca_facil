@@ -1,0 +1,37 @@
+{
+  "app": "CobrancaFacil",
+  "tipo": "cadastro-haras",
+  "versao": 2,
+  "geradoEm": "2026-01-01T12:00:00.000Z",
+  "resumo": { "totalProprietarios": 2, "totalAnimais": 3, "receitaMensal": 4000, "despesasHaras": 0, "despesasCasa": 0 },
+  "proprietarios": [
+    {
+      "nome": "Cliente Exemplo A",
+      "telefone": "(11) 90000-0000",
+      "totalAnimais": 2,
+      "mensalidadeTotal": 2600,
+      "animais": [
+        { "id": "ex-1", "numeroGeral": 1, "numeroNoCliente": "1 de 2", "nome": "Animal Exemplo 1", "mensalidade": 1300,
+          "diaPagamento": 10, "regraDia": "dia-fixo", "descricaoDia": "Todo dia 10", "proximoVencimento": "2026-01-10",
+          "situacao": "em-aberto", "repeticao": "mensal", "aviso": { "horario": "09:00", "antecedenciaDias": 2 },
+          "servico": "Animal: Animal Exemplo 1 (Hospedagem)", "observacoes": "Ração por conta própria", "pagamentos": [] },
+        { "id": "ex-2", "numeroGeral": 2, "numeroNoCliente": "2 de 2", "nome": "Animal Exemplo 2", "mensalidade": 1300,
+          "diaPagamento": 10, "regraDia": "dia-fixo", "descricaoDia": "Todo dia 10", "proximoVencimento": "2026-01-10",
+          "situacao": "em-aberto", "repeticao": "mensal", "aviso": { "horario": "09:00", "antecedenciaDias": 2 },
+          "servico": "Animal: Animal Exemplo 2 (Hospedagem)", "observacoes": "", "pagamentos": [] }
+      ]
+    },
+    {
+      "nome": "Cliente Exemplo B",
+      "telefone": "",
+      "totalAnimais": 1,
+      "mensalidadeTotal": 1400,
+      "animais": [
+        { "id": "ex-3", "numeroGeral": 3, "numeroNoCliente": "1 de 1", "nome": "Animal Exemplo 3", "mensalidade": 1400,
+          "diaPagamento": 30, "regraDia": "ultimo-dia-util", "descricaoDia": "Último dia útil do mês", "proximoVencimento": "2026-01-30",
+          "situacao": "em-aberto", "repeticao": "mensal", "aviso": { "horario": "09:00", "antecedenciaDias": 2 },
+          "servico": "Animal: Animal Exemplo 3 (Hospedagem)", "observacoes": "", "pagamentos": [] }
+      ]
+    }
+  ]
+}
